@@ -4,7 +4,7 @@ const APIFeatures = require('./../utils/apiFeatures');
 
 exports.deleteOne = Model =>
   catchAsync(async (req, res, next) => {
-    const doc = await Model.findByPk(req.params.id);
+    const doc = await Model.findByPk(req.params.id, { hooks: false });
 
     if (!doc) {
       return next(new AppError('No Result Found With That ID', 404));

@@ -33,8 +33,14 @@ exports.uploadTourImages = upload.fields([
 // upload.array('images', 5) req.files
 
 exports.resizeTourImages = catchAsync(async (req, res, next) => {
-  console.log('req', !req.files.image_cover);
-  if (!req.files.images) return next();
+  console.log('req', req.files);
+  if (
+    !req.files ||
+    !req.files.images ||
+    req.files.images === undefined ||
+    req.files.images === null
+  )
+    return next();
   console.log('in Images');
 
   // 1) Images
@@ -57,13 +63,19 @@ exports.resizeTourImages = catchAsync(async (req, res, next) => {
   next();
 });
 exports.resizeTourImage_Cover = catchAsync(async (req, res, next) => {
-  console.log('req', !req.files.image_cover);
-  if (!req.files.image_cover) return next();
+  // console.log('req', !req.files.image_cover);
+  if (
+    !req.files ||
+    !req.files.image_cover ||
+    req.files.image_cover === undefined ||
+    req.files.image_cover === null
+  )
+    return next();
   console.log('in Cover');
 
   // 1) Cover image
   req.body.image_cover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
-  console.log('image_cover', req.body.image_cover);
+  // console.log('image_cover', req.body.image_cover);
 
   const imageC = await sharp(req.files.image_cover[0].buffer)
     .resize(2000, 1333)
@@ -95,7 +107,7 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
     .sort()
     .limitFields()
     .paginate();
-  console.log(features);
+  // console.log(features);
   // Await The Query
   const tours = await features.execute();
   // Check Length
@@ -186,9 +198,13 @@ exports.createTour = catchAsync(async (req, res, next) => {
     })
   );
   console.log('gu', guideChecks);
+  const id = await Tour.findAll({
+    order: [['id']]
+  });
+  const lastId = id.at(-1).id;
 
   if (guideChecks.every(guide => guide !== null)) {
-    const newTour = await Tour.create(req.body);
+    const newTour = await Tour.create({ ...req.body, id: lastId + 1 });
     await Promise.all(
       newTour.guide_id.map(async id => {
         await Guide.create({ userId: id, tourId: newTour.id });

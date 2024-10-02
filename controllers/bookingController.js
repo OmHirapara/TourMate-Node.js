@@ -1,13 +1,10 @@
 const stripe = require('stripe')(`${process.env.STRIPE_SECRET_KEY}`);
-const {
-  Tour,
-  User,
-  Booking
-} = require('./../models/associations.js');
+const { Tour, User, Booking } = require('./../models/associations.js');
 const catchAsync = require('../utils/catchAsync');
 const Email = require('./../utils/email');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
+const APIFeatures = require('../utils/apiFeatures');
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   // 1) Get the currently booked tour
@@ -148,7 +145,15 @@ exports.getBooking = catchAsync(async (req, res, next) => {
   });
 });
 exports.getAllBookings = catchAsync(async (req, res, next) => {
-  const booking = await Booking.findAll();
+  const features = new APIFeatures(Booking, req.query)
+    .filter()
+    .sort()
+    .limitFields()
+    .paginate();
+
+  // Await The Query
+  const booking = await features.execute();
+  // const booking = await Booking.findAll();
 
   if (!booking) {
     return next(new AppError('No tour booking with found', 404));

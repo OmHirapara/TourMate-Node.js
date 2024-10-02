@@ -53,7 +53,7 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
     .paginate();
 
   // Await The Query
-  const users = await features.execute();
+  const users = await features.execute(false);
 
   // SEND RESPONSE
   res.status(200).json({
@@ -154,3 +154,18 @@ exports.updateUser = (req, res) => {
 };
 
 exports.deleteUser = factory.deleteOne(User);
+
+exports.softDeleteUser = catchAsync(async (req, res, next) => {
+  await User.update(
+    { active: false },
+    {
+      where: { id: req.params.id },
+      individualHooks: true // Ensure any hooks are run if necessary
+    }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    data: null
+  });
+});

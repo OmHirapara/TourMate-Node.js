@@ -35,7 +35,7 @@ class APIFeatures {
   }
 
   sort() {
-    let orderClause = [['id', 'DESC']]; // Default sorting
+    let orderClause = [['id', 'ASC']]; // Default sorting
 
     if (this.queryString.sort) {
       const sortBy = this.queryString.sort
@@ -86,13 +86,14 @@ class APIFeatures {
     return this;
   }
 
-  async execute() {
+  async execute(hooks = true) {
     const options = {
       where: this.sequelizeFormattedQuery,
       order: this.orderClause,
       attributes: this.attributesClause,
       limit: this.limit,
-      offset: this.offset
+      offset: this.offset,
+      hooks: hooks ? hooks : false
     };
     return await this.query.findAll(options);
   }

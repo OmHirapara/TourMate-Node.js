@@ -8,7 +8,6 @@ const router = express.Router();
 router.use('/:tourId/reviews', reviewRouter);
 router.get('/distances/:latlng/:unit', tourController.getDistances);
 
-// router.get('/topsec', tourController.topfivestart);
 router
   .route('/top-5-cheap')
   .get(tourController.aliasTopTours, tourController.getAllTours);

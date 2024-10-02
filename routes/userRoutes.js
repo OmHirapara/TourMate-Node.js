@@ -34,7 +34,8 @@ router.route('/').get(userController.getAllUsers);
 router
   .route('/:id')
   .get(userController.getUserById)
-  .patch(userController.updateUser)
-  .delete(userController.deleteUser);
+  .patch(userController.updateUser);
+router.route('/block/:id').delete(userController.softDeleteUser);
+router.route('/delete/:id').delete(userController.deleteUser);
 
 module.exports = router;

@@ -95,7 +95,7 @@ exports.login = catchAsync(async (req, res, next) => {
     console.log('failedattmpts', user.failed_login_attempts);
 
     if (user.failed_login_attempts >= 3) {
-      user.blocked_until = new Date(Date.now() + 60 * 60 * 1000); // Block for 1 hour
+      user.blocked_until = new Date(Date.now() + 5 * 60 * 1000); // Block for 5 Minutes
     }
     await user.save();
     return next(new AppError('Incorrect email or password', 401));
