@@ -68,9 +68,7 @@ Follow these instructions to set up the project on your local machine:
 
 4. **Create the database:**
 
-```
-Open your PostgreSQL client and create a database named tourmate.
-```
+- Open your PostgreSQL client and create a database named `tourmate`
 
 ## Getting Started
 
