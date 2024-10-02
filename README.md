@@ -31,7 +31,7 @@ Follow these instructions to set up the project on your local machine:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/tourmate.git
+   git clone https://github.com/OmHirapara/TourMate-Node.js
    cd tourmate
    ```
 2. **Install dependencies:**
@@ -147,7 +147,7 @@ We welcome contributions from the community! Please feel free to raise an issue 
 1. **Fork the repository.**
 2. **Clone your forked repository** to your local machine:
    ```bash
-   git clone https://github.com/your-username/tourmate.git
+   git clone https://github.com/OmHirapara/TourMate-Node.js
    ```
 3. **Create a feature branch** for your new feature or bug fix:
    ```bash
