@@ -70,6 +70,22 @@ Follow these instructions to set up the project on your local machine:
 
 - Open your PostgreSQL client and create a database named `tourmate`
 
+5. **Bundle**
+
+- To bundle the frontend JavaScript files for development, use:
+
+```
+npm run watch:js
+
+```
+
+- Build the frontend JavaScript files for production:
+
+```
+npm run build:js
+
+```
+
 ## Getting Started
 
 1.  **Start the development server:**
