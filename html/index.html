@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review System</title>
+
+</head>
+<main class="main">
+    <div class="review-body">
+        <h1>Reviews</h1>
+        <div id="reviews"></div>
+        <button onclick="toggleReviewForm()">Write Review</button>
+        <div id="reviewForm" class="review-form">
+            <h2>Write a Review</h2>
+            <div class="stars" id="ratingStars">
+                <span onclick="setRating(1)">☆</span>
+                <span onclick="setRating(2)">☆</span>
+                <span onclick="setRating(3)">☆</span>
+                <span onclick="setRating(4)">☆</span>
+                <span onclick="setRating(5)">☆</span>
+            </div>
+            <textarea id="reviewText" placeholder="Write your review here..."></textarea>
+            <button onclick="submitReview()">Submit Review</button>
+        </div>
+
+    </div>
+</main>
+
+</html>
+
+<script>
+    let currentRating = 0;
+    const reviews = [];
+
+    function toggleReviewForm() {
+        const form = document.getElementById('reviewForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function setRating(rating) {
+        currentRating = rating;
+        const stars = document.getElementById('ratingStars').children;
+        for (let i = 0; i < stars.length; i++) {
+            stars[i].textContent = i < rating ? '★' : '☆';
+        }
+    }
+
+    function submitReview() {
+        const text = document.getElementById('reviewText').value;
+        if (text && currentRating) {
+            reviews.push({ text, rating: currentRating });
+            displayReviews();
+            document.getElementById('reviewText').value = '';
+            setRating(0);
+            toggleReviewForm();
+        } else {
+            alert('Please provide both a rating and review text.');
+        }
+    }
+
+    function displayReviews() {
+        const reviewsDiv = document.getElementById('reviews');
+        reviewsDiv.innerHTML = '';
+        reviews.forEach((review, index) => {
+            const reviewElement = document.createElement('div');
+            reviewElement.className = 'review-card';
+            reviewElement.innerHTML = `
+            <div class="stars">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</div>
+            <p>${review.text}</p>
+            <button onclick="editReview(${index})">Edit</button>
+            <button onclick="deleteReview(${index})">Delete</button>
+        `;
+            reviewsDiv.appendChild(reviewElement);
+        });
+    }
+
+    function editReview(index) {
+        const review = reviews[index];
+        document.getElementById('reviewText').value = review.text;
+        setRating(review.rating);
+        toggleReviewForm();
+        reviews.splice(index, 1);
+        displayReviews();
+    }
+
+    function deleteReview(index) {
+        if (confirm('Are you sure you want to delete this review?')) {
+            reviews.splice(index, 1);
+            displayReviews();
+        }
+    }
+</script>

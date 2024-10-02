@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Write Review</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f8f8f8;
+    }
+
+    .review-card {
+      display: flex;
+      align-items: center;
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 630px;
+      margin: 20px auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .review-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .review-content {
+      margin-left: 15px;
+      flex-grow: 1;
+    }
+
+    .review-content h3 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .review-content p {
+      font-size: 14px;
+      color: #777;
+    }
+
+    .star-rating {
+      margin-top: 8px;
+      font-size: 20px;
+      color: #ccc;
+    }
+
+    .star {
+      cursor: pointer;
+      font-size: 30px;
+      color: #ccc;
+    }
+
+    .star.selected {
+      color: #f1c40f;
+    }
+
+    .star:hover {
+      color: #f1c40f;
+    }
+
+    .btn-write-review {
+      background-color: #55c57a;
+      color: #fff;
+      font-size: 0.9rem;
+      padding: 1.1rem 1rem;
+      border-radius: 10rem;
+      text-transform: uppercase;
+      position: relative;
+      -webkit-transition: all 0.2s;
+      transition: all 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 400;
+      border: none;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .btn-write-review:hover {
+      background-color: #7dd56f;
+      transform: scale(1.05);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: white;
+      margin: 100px auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 500px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .modal-content h2 {
+      color: #28a745;
+      margin-bottom: 20px;
+    }
+
+    .modal-content .review-card {
+      border: none;
+      box-shadow: none;
+      margin-bottom: 20px;
+    }
+
+    .modal-content textarea {
+      width: 90%;
+      height: 100px;
+      padding: 10px;
+      border: 1px solid #28a745;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .modal-content .btn-group {
+      margin-top: 20px;
+    }
+
+    .modal-content .btn-group button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .modal-content .cancel-btn {
+      background-color: #f44336;
+      color: white;
+      margin-right: 10px;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .modal-content .post-btn {
+      background-color: #28a745;
+      color: white;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .modal-content .cancel-btn:hover {
+      background-color: #d32f2f;
+      transform: scale(1.1);
+    }
+
+    .modal-content .post-btn:hover {
+      background-color: #1e7d32;
+      transform: scale(1.1);
+    }
+
+    /* After posting review */
+    .review-card-after {
+      display: none;
+      align-items: center;
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 630px;
+      margin: 20px auto;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .review-card-after img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    .review-content-after {
+      margin-left: 15px;
+      flex-grow: 1;
+    }
+
+    .review-content-after h3 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    .review-content-after p {
+      font-size: 14px;
+      color: #777;
+    }
+
+    .star-rating-after {
+      margin-top: 8px;
+    }
+
+    .star-rating-after span {
+      font-size: 20px;
+      cursor: pointer;
+      color: #f1c40f;
+    }
+
+    .review-actions {
+      text-align: right;
+      margin-top: 10px;
+    }
+
+    .review-actions a {
+      font-size: 14px;
+      text-decoration: none;
+      margin-left: 15px;
+      cursor: pointer;
+    }
+
+    .btn-group-after {
+      display: flex;
+      flex-direction: column;
+      /* Stacks buttons vertically */
+      gap: 10px;
+      /* Adds space between the buttons */
+      margin-top: 10px;
+
+    }
+
+    .update-review {
+      padding: 8px 16px;
+      /* Adds padding to buttons */
+      background-color: #4CAF50;
+      /* Green background for buttons */
+      color: white;
+      /* White text */
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .update-review:hover {
+      color: #f8f8f8;
+      background-color: #1b662f;
+      transform: scale(1.05);
+    }
+
+    .delete-review {
+      padding: 8px 16px;
+      /* Adds padding to buttons */
+      background-color: #f44336;
+      /* Green background for buttons */
+      color: white;
+      /* White text */
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .delete-review:hover {
+      color: white;
+      background-color: #d32f2f;
+      transform: scale(1.05);
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .review-text {
+      font-size: 12px;
+      color: #777;
+      margin-top: 10px;
+      word-break: break-all;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="reviewBefore" class="review-card">
+    <img src="https://via.placeholder.com/100x100" alt="Tour Image">
+    <div class="review-content">
+      <h3>The Mountain Biker</h3>
+      <p>You visited on February 5, 2024</p>
+      <div class="star-rating">
+        <span>&#9734;</span>
+        <span>&#9734;</span>
+        <span>&#9734;</span>
+        <span>&#9734;</span>
+        <span>&#9734;</span>
+      </div>
+    </div>
+    <button class="btn-write-review" id="openModalBtn">Write Review</button>
+  </div>
+
+  <!-- Modal -->
+  <div id="reviewModal" class="modal">
+    <div class="modal-content">
+      <h2>WRITE REVIEW</h2>
+      <div class="review-card">
+        <img src="https://via.placeholder.com/100x100" alt="Tour Image">
+        <div class="review-content">
+          <h3>The Mountain Biker</h3>
+          <p>You visited on February 5, 2024</p>
+          <div class="star-rating">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+          </div>
+        </div>
+      </div>
+      <textarea placeholder="Tell us about your trip . . ."></textarea>
+      <div class="btn-group">
+        <button class="cancel-btn" id="cancelBtn">CANCEL</button>
+        <button class="post-btn" id="postBtn">POST</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Afer Posting The Review -->
+  <div id="reviewAfter" class="review-card-after" id="reviewContainer">
+    <img src="https://via.placeholder.com/100x100" alt="Tour Image">
+    <div class="review-content-after">
+      <h3>The Mountain Biker</h3>
+      <p>You visited on February 5, 2024</p>
+      <div class="star-rating" id="starRating">
+        <span>&#9733;</span>
+        <span>&#9733;</span>
+        <span>&#9733;</span>
+        <span>&#9733;</span>
+        <span>&#9733;</span>
+      </div>
+      <p class="review-text" id="reviewText">xgfdvdsfgvdfv</p>
+    </div>
+    <div class="review-actions">
+      <div class="btn-group-after">
+        <button class="update-review" id="updateReviewBtn">Update Review</button>
+        <button class="delete-review" id="deleteReviewBtn">Delete Review</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get modal element
+    const modal = document.getElementById("reviewModal");
+    // Review Card Before Post
+    const reviewBefore = document.getElementById("reviewBefore");
+    // After 
+    const reviewAfter = document.getElementById("reviewAfter");
+
+    // Get the button that opens the modal
+    const openModalBtn = document.getElementById("openModalBtn");
+
+    // Get the cancel button inside modal
+    const cancelBtn = document.getElementById("cancelBtn");
+
+    // Get all star elements
+    const stars = document.querySelectorAll('.star');
+    let ratingValue = 0;
+
+    // Get post button inside modal
+    const postBtn = document.getElementById("postBtn");
+
+    // Open the modal when "Write Review" is clicked
+    openModalBtn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    // Close the modal when "CANCEL" button is clicked
+    cancelBtn.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // Close modal when clicking outside the modal content
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    // Add event listeners to stars
+    stars.forEach(function(star) {
+      star.addEventListener('click', function() {
+        ratingValue = parseInt(this.getAttribute('data-value')); // Convert to integer
+        updateStars(ratingValue);
+      });
+
+      star.addEventListener('mouseover', function() {
+        updateStars(parseInt(this.getAttribute('data-value'))); // Convert to integer
+      });
+
+      star.addEventListener('mouseout', function() {
+        updateStars(ratingValue); // Reset to the clicked rating when mouse leaves
+      });
+    });
+
+    // Function to update the stars display
+    function updateStars(rating) {
+      stars.forEach(function(star, index) {
+        console.log('out', ratingValue);
+        if (index < rating) {
+          console.log('in', index, star);
+          star.classList.add('selected');
+        } else {
+          star.classList.remove('selected');
+        }
+      });
+    }
+
+    /////////////////////////////////////////////////////////////////////////////// After Review Post
+    // Get review text area
+    const reviewTextArea = document.getElementById("reviewTextArea");
+
+    // Get review text
+    const reviewText = document.getElementById("reviewText");
+    // Get update and delete buttons
+    const updateReviewBtn = document.getElementById("updateReviewBtn");
+    const deleteReviewBtn = document.getElementById("deleteReviewBtn");
+
+    // Open the modal when "Write Review" is clicked
+    openModalBtn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    // Close the modal when "CANCEL" button is clicked
+    cancelBtn.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // Post review
+    postBtn.onclick = function() {
+      // Get value from textarea and set to reviewText
+      // reviewText.innerHTML = reviewTextArea.value;
+      modal.style.display = "none"; // Close modal after posting
+      reviewBefore.style.display = "none"
+      reviewAfter.style.display = "flex"
+
+    }
+
+    // // Update review
+    // updateReviewBtn.onclick = function () {
+    //     modal.style.display = "block";
+    //     // Set the existing review text in the textarea
+    //     reviewTextArea.value = reviewText.innerHTML;
+    // }
+
+    // // Delete review
+    // deleteReviewBtn.onclick = function () {
+    //     if (confirm("Are you sure you want to delete your review?")) {
+    //         document.getElementById("reviewContainer").style.display = "none";
+    //     }
+    // }
+  </script>
+
+</body>
+
+</html>

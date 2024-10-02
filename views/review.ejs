@@ -1,0 +1,226 @@
+<%- include('partials/header.ejs') %>
+<!-- Assuming you have a header partial -->
+
+<main class="main">
+  <div class="user-view">
+    <nav class="user-view__menu">
+      <ul class="side-nav">
+        <li class="">
+          <a href="/me">
+            <svg>
+              <use xlink:href="img/icons.svg#icon-settings"></use>
+            </svg>
+            Settings
+          </a>
+        </li>
+        <li class="">
+          <a href="/my-tours">
+            <svg>
+              <use xlink:href="img/icons.svg#icon-briefcase"></use>
+            </svg>
+            My bookings
+          </a>
+        </li>
+        <li class="side-nav--active">
+          <a href="/my-review">
+            <svg>
+              <use xlink:href="img/icons.svg#icon-star"></use>
+            </svg>
+            My reviews
+          </a>
+        </li>
+        <li class="">
+          <a href="/my-billing"">
+            <svg>
+              <use xlink:href=" img/icons.svg#icon-credit-card"></use>
+            </svg>
+            Billing
+          </a>
+        </li>
+        <% if (user.role==='admin' ) { %>
+        <div class="admin-nav">
+          <h5 class="admin-nav__heading">Admin</h5>
+          <ul class="side-nav">
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href="img/icons.svg#icon-map"></use>
+                </svg>
+                Manage tours
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href="img/icons.svg#icon-users"></use>
+                </svg>
+                Manage users
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href="img/icons.svg#icon-star"></use>
+                </svg>
+                Manage reviews
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href="img/icons.svg#icon-briefcase"></use>
+                </svg>
+                Manage bookings
+              </a>
+            </li>
+          </ul>
+        </div>
+        <% } %>
+      </ul>
+    </nav>
+
+    <div class="user-view__content">
+
+      <%review.forEach(review=>{ %>
+      <!-- <% console.log('in',review.review_id === null) %> -->
+      <% if (review.review_id===null){%>
+      <% console.log(review.tour_name)%>
+      <!-- <%  console.log('in',review.review_id === null) %> -->
+      <div id="reviewBefore" class="review-card">
+        <img src="/img/tours/<%= review.image_cover %>" alt="Tour Image">
+        <div class="review-content">
+          <h3>
+            <a href="/tour/<%= review.slug %>"><%= review.tour_name %></a>
+          </h3>
+          <p>You visited on <%= new Date(review.start_dates[0]).toLocaleString('en-us', {day:'numeric',
+                    month: 'long' , year: 'numeric' }) %>
+          </p>
+          <div class="star-rating">
+            <span>&#9734;</span>
+            <span>&#9734;</span>
+            <span>&#9734;</span>
+            <span>&#9734;</span>
+            <span>&#9734;</span>
+          </div>
+        </div>
+        <div class="btn-group-add">
+          <button class="btn btn--small btn--green openModalBtn">ADD</button>
+        </div>
+      </div>
+
+      <div class="modal reviewModal">
+        <div class="modal-content">
+          <h2>WRITE REVIEW</h2>
+          <div class="review-card-modal">
+            <img src="/img/tours/<%= review.image_cover %>" alt="Tour Image">
+            <div class="review-content-modal">
+              <h3>
+                <a href="/tour/<%= review.slug %>"><%= review.tour_name %></a>
+              </h3>
+              <p>You visited on <%= new Date(review.start_dates[0]).toLocaleString('en-us', {day:'numeric',
+                        month: 'long' , year: 'numeric' }) %>
+              </p>
+              <div class="star-rating">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+              </div>
+            </div>
+          </div>
+          <textarea placeholder="Tell us about your trip . . ." data-tour-id="<%= review.tour_id %>"></textarea>
+          <div class=" btn-group">
+            <button class="btn-cancel btn--small-cancel cancelBtn">CANCEL</button>
+            <button class="btn btn--small btn--green postBtn" data-tour-id="<%= review.tour_id %>">POST</button>
+          </div>
+        </div>
+      </div>
+      <% }else {%>
+      <!-- Afer Posting The Review -->
+      <div id="reviewAfter" class="review-card" id="reviewContainer">
+        <div class="aligh-start"><img src="/img/tours/<%= review.image_cover %>" alt="Tour Image"></div>
+        <div class="w-full flex">
+          <div class="review-content">
+            <h3>
+              <a href="/tour/<%= review.slug %>"><%= review.tour_name %></a>
+            </h3>
+            <p>You visited on <%= new Date(review.start_dates[0]).toLocaleString('en-us', {day:'numeric',
+                        month: 'long' , year: 'numeric' }) %>
+            </p>
+            <div class="star-rating-after" id="starRating">
+              <% for(let i=0;i<review.rating;i++) { %>
+              <span>&#9733;</span>
+              <%}%>
+                          <% for(let i=0;i<5-review.rating;i++) {%>
+              <span>&#9734;</span>
+              <% }%>
+              <p class="review-text " style="font-weight: 600;" id="reviewText">
+                <%= review.review%>
+              </p>
+
+            </div>
+
+          </div>
+          <div class="review-actions">
+            <div class="btn-group-after">
+              <button class="btn btn--small btn--green openUpdateModalBtn" data-rating="<%= review.rating %>">UPDATE</button>
+              <button class="btn-cancel btn--small-cancel openDeleteModalBtn">Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-delete deleteModal">
+        <div class="modal-content-delete">
+          <h2 class="heading-warning heading-secondary--error heading-secondary">DELETE REVIEW</h2>
+          <p>Do you want to delete this review?</p>
+          <div class="button-group">
+            <button class="btn-cancel btn--small-cancel cancelDeleteBtn">NO</button>
+            <button class="btn btn--small btn--green deleteBtn" data-review-id = "<%= review.review_id %>">YES</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal updateModal">
+        <div class="modal-content">
+          <h2>UPDATE REVIEW</h2>
+          <div class="review-card-modal">
+            <img src="/img/tours/<%= review.image_cover %>" alt="Tour Image">
+            <div class="review-content-modal">
+              <h3>
+                <a href="/tour/<%= review.slug %>"><%= review.tour_name %></a>
+              </h3>
+              <p>You visited on <%= new Date(review.start_dates[0]).toLocaleString('en-us', {day:'numeric',
+                        month: 'long' , year: 'numeric' }) %>
+              </p>
+              <div class="star-rating">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+              </div>
+            </div>
+          </div>
+          <% console.log('sss',review.tour_id)%>
+          <textarea placeholder="Tell us about your trip . . ." data-tour-id="<%= review.tour_id %>" class="review"><%= review.review %></textarea>
+          <div class=" btn-group">
+            <button class="btn-cancel btn--small-cancel cancelUpdateBtn">CANCEL</button>
+            <button class="btn btn--small btn--green updateBtn" data-review-id="<%= review.review_id %>">UPDATE</button>
+          </div>
+        </div>
+      </div>
+      <%}%>
+                <%})%>
+      <% if(review.length===0 || review===undefined|| review===null){%>
+      <div class="error">
+        <div class="error__msg" style="margin-left: 386px;">Please Purchase A Tour To Write A
+          Review.</div>
+      </div>
+      <%}%>
+      </div>
+
+    </div>
+  </main>
+
+  <%- include('partials/footer.ejs') %>
+      <!-- Assuming you have a footer partial -->

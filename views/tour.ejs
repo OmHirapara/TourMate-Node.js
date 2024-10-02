@@ -1,0 +1,160 @@
+<%- include('partials/header.ejs'); -%>
+  <main>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <section class="section-header">
+      <div class="header__hero">
+        <div class="header__hero-overlay">&nbsp;</div>
+        <img class="header__hero-img" src="/img/tours/<%= tour.image_cover %>" alt="<%= tour.name %>">
+      </div>
+
+      <div class="heading-box">
+        <h1 class="heading-primary">
+          <span>
+            <%= tour.name %> tour
+          </span>
+        </h1>
+        <div class="heading-box__group">
+          <div class="heading-box__detail">
+            <svg class="heading-box__icon">
+              <use xlink:href="/img/icons.svg#icon-clock"></use>
+            </svg>
+            <span class="heading-box__text">
+              <%= tour.duration %> days
+            </span>
+          </div>
+          <div class="heading-box__detail">
+            <svg class="heading-box__icon">
+              <use xlink:href="/img/icons.svg#icon-map-pin"></use>
+            </svg>
+            <span class="heading-box__text">
+              <%= tour.start_location.description %>
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-description">
+      <div class="overview-box">
+        <div class="overview-box__group">
+          <h2 class="heading-secondary ma-bt-lg">Quick facts</h2>
+
+          <div class="overview-box__detail">
+            <svg class="overview-box__icon">
+              <use xlink:href="/img/icons.svg#icon-calendar"></use>
+            </svg>
+            <span class="overview-box__label">Next date</span>
+            <span class="overview-box__text">
+              <%= new Date(tour.start_dates[0]).toLocaleString('en-us', { day:'numeric', month: 'long' , year: 'numeric'
+                }) %>
+            </span>
+          </div>
+          <div class="overview-box__detail">
+            <svg class="overview-box__icon">
+              <use xlink:href="/img/icons.svg#icon-trending-up"></use>
+            </svg>
+            <span class="overview-box__label">Difficulty</span>
+            <span class="overview-box__text">
+              <%= tour.difficulty %>
+            </span>
+          </div>
+          <div class="overview-box__detail">
+            <svg class="overview-box__icon">
+              <use xlink:href="/img/icons.svg#icon-user"></use>
+            </svg>
+            <span class="overview-box__label">Participants</span>
+            <span class="overview-box__text">
+              <%= tour.maxgroup_size %> people
+            </span>
+          </div>
+          <div class="overview-box__detail">
+            <svg class="overview-box__icon">
+              <use xlink:href="/img/icons.svg#icon-star"></use>
+            </svg>
+            <span class="overview-box__label">Rating</span>
+            <span class="overview-box__text">
+              <%= tour.ratings_average %> / 5
+            </span>
+          </div>
+        </div>
+
+        <div class="overview-box__group">
+          <h2 class="heading-secondary ma-bt-lg">Your tour guides</h2>
+
+          <% tour.guides.forEach(guide=> { %>
+            <div class="overview-box__detail">
+              <img class="overview-box__img" src="/img/users/<%= guide.photo %>" alt="<%= guide.name %>">
+              <% if (guide.role==='lead-guide' ) { %>
+                <span class="overview-box__label">Lead guide</span>
+                <% } else if (guide.role==='guide' ) { %>
+                  <span class="overview-box__label">Tour guide</span>
+                  <% } %>
+                    <span class="overview-box__text">
+                      <%= guide.name %>
+                    </span>
+            </div>
+            <% }); %>
+        </div>
+      </div>
+
+      <div class="description-box">
+        <h2 class="heading-secondary ma-bt-lg">About <%= tour.name %> tour</h2>
+        <% tour.description.split('\n').forEach(paragraph=> { %>
+          <p class="description__text">
+            <%= paragraph %>
+          </p>
+          <% }); %>
+      </div>
+    </section>
+
+    <section class="section-pictures">
+      <% tour.images.forEach((img, i)=> { %>
+        <div class="picture-box">
+          <img class="picture-box__img picture-box__img--<%= i + 1 %>" src="/img/tours/<%= img %>"
+            alt="The Park Camper Tour <%= i + 1 %>">
+        </div>
+        <% }); %>
+    </section>
+
+    <section class="section-map">
+      <div id="map" data-locations='<%= JSON.stringify(tour.locations) %>'></div>
+    </section>
+
+    <section class="section-reviews">
+      <div class="reviews">
+        <% tour.reviews.forEach(review=> { %>
+          <%- include('partials/reviewCard', { review: review }) %>
+            <% }); %>
+      </div>
+    </section>
+
+    <section class="section-cta">
+      <div class="cta">
+        <div class="cta__img cta__img--logo">
+          <img src="/img/logo-white.png" alt="Natours logo">
+        </div>
+        <img class="cta__img cta__img--1" src="/img/tours/<%= tour.images[1] %>" alt="Tour picture">
+        <img class="cta__img cta__img--2" src="/img/tours/<%= tour.images[2] %>" alt="Tour picture">
+        <div class="cta__content">
+          <h2 class="heading-secondary">What are you waiting for?</h2>
+          <p class="cta__text">
+            <%= tour.duration %> days. 1 adventure. Infinite memories. Make it yours today!
+          </p>
+          <% if (user) { %>
+            <button class="btn btn--green span-all-rows" id="book-tour" data-tour-id="<%= tour.id %>">
+              Book tour now!
+            </button>
+            <% } else { %>
+              <a class="btn btn--green span-all-rows" href="/login">Log in to book tour</a>
+              <% } %>
+
+        </div>
+      </div>
+    </section>
+  </main>
+  <script src="/js/leaflet.js"></script>
+  <%- include('partials/footer.ejs'); -%>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Booking Summary</title>
+  <style>
+    .view-receipt {
+      color: #27ae60;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .view-receipt:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="booking-card">
+    <div class="image-container">
+      <img src="sea-explorer.jpg" alt="The Sea Explorer">
+    </div>
+    <div class="details">
+      <h3>The Sea Explorer</h3>
+      <p class="booking-date">You booked on August 18, 2023</p>
+      <div class="price-status">
+        <span class="total">Total: $497</span>
+        <span class="status paid">PAID</span>
+      </div>
+    </div>
+    <div class="receipt">
+      <a href="#" class="view-receipt">View Receipt</a>
+    </div>
+  </div>
+</body>
+
+</html>
+<script>
+  document.querySelector('.view-receipt').addEventListener('click', function(event) {
+    event.preventDefault();
+    alert('Receipt functionality coming soon!');
+  });
+</script>

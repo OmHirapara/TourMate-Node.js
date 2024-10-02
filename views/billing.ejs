@@ -1,0 +1,118 @@
+<%- include('partials/header.ejs') %>
+  <!-- Assuming you have a header partial -->
+
+  <main class="main">
+    <div class="user-view">
+      <nav class="user-view__menu">
+        <ul class="side-nav">
+          <li class="">
+            <a href="/me">
+              <svg>
+                <use xlink:href="img/icons.svg#icon-settings"></use>
+              </svg>
+              Settings
+            </a>
+          </li>
+          <li class="">
+            <a href="/my-tours">
+              <svg>
+                <use xlink:href="img/icons.svg#icon-briefcase"></use>
+              </svg>
+              My bookings
+            </a>
+          </li>
+          <li class="">
+            <a href="/my-review">
+              <svg>
+                <use xlink:href="img/icons.svg#icon-star"></use>
+              </svg>
+              My reviews
+            </a>
+          </li>
+          <li class="side-nav--active">
+            <a href="/my-billing">
+              <svg>
+                <use xlink:href="img/icons.svg#icon-credit-card"></use>
+              </svg>
+              Billing
+            </a>
+          </li>
+          <% if (user.role==='admin' ) { %>
+            <div class="admin-nav">
+              <h5 class="admin-nav__heading">Admin</h5>
+              <ul class="side-nav">
+                <li>
+                  <a href="#">
+                    <svg>
+                      <use xlink:href="img/icons.svg#icon-map"></use>
+                    </svg>
+                    Manage tours
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <svg>
+                      <use xlink:href="img/icons.svg#icon-users"></use>
+                    </svg>
+                    Manage users
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <svg>
+                      <use xlink:href="img/icons.svg#icon-star"></use>
+                    </svg>
+                    Manage reviews
+                  </a>
+                </li>
+                <li>
+                  <a href="#">
+                    <svg>
+                      <use xlink:href="img/icons.svg#icon-briefcase"></use>
+                    </svg>
+                    Manage bookings
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <% } %>
+        </ul>
+      </nav>
+
+      <div class="user-view__content">
+        <%booking.forEach(booking=>{ %>
+          <div class="booking-card">
+            <div class="image-container">
+              <img src="/img/tours/<%= booking.tour.image_cover %>" alt="The Sea Explorer">
+            </div>
+            <div class="details">
+              <h3>
+                <a href="/tour/<%= booking.tour.slug %>">
+                  <%= booking.tour.name %>
+                </a>
+              </h3>
+              <p class="booking-date">You booked on <%= new Date(booking.tour.start_dates[0]).toLocaleString('en-us',
+                  {day:'numeric', month: 'long' , year: 'numeric' }) %>
+              </p>
+              <div class="price-status">
+                <span class="total">Total: $<%= booking.price %></span>
+                <span class="status paid">PAID</span>
+              </div>
+            </div>
+            <div class="receipt">
+              <a href="<%= booking.invoice_url %>" target="_blank" class=" btn btn--green btn--small">View Receipt</a>
+            </div>
+          </div>
+          <%})%>
+      </div>
+    </div>
+    <!-- <% if(booking.length===0 || booking===undefined|| booking===null){%>
+      <div class="error">
+        <div class="error__msg" style="margin-left: 386px;">Please Purchase A Tour To Write A
+          Review.</div>
+      </div>
+      <%}%> -->
+  </main>
+
+  <%- include('partials/footer.ejs') %>
+    <!-- Assuming you have a footer partial -->

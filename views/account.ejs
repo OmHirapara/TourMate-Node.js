@@ -1,0 +1,141 @@
+<%- include('partials/header.ejs') %>
+<!-- Assuming you have a header partial -->
+
+<main class="main">
+  <div class="user-view">
+    <nav class="user-view__menu">
+      <ul class="side-nav">
+        <li class="side-nav--active">
+          <a href="/me">
+            <svg>
+              <use xlink:href="img/icons.svg#icon-settings"></use>
+            </svg>
+            Settings
+          </a>
+        </li>
+        <li class="">
+          <a href="/my-tours">
+            <svg>
+              <use xlink:href="img/icons.svg#icon-briefcase"></use>
+            </svg>
+            My bookings
+          </a>
+        </li>
+        <li class="">
+          <a href="/my-review">
+            <svg>
+              <use xlink:href="img/icons.svg#icon-star"></use>
+            </svg>
+            My reviews
+          </a>
+        </li>
+        <li class="">
+          <a href="/my-billing">
+            <svg>
+              <use xlink:href="img/icons.svg#icon-credit-card"></use>
+            </svg>
+            Billing
+          </a>
+        </li>
+        <% if (user.role==='admin' ) { %>
+        <div class="admin-nav">
+          <h5 class="admin-nav__heading">Admin</h5>
+          <ul class="side-nav">
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href="img/icons.svg#icon-map"></use>
+                </svg>
+                Manage tours
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href="img/icons.svg#icon-users"></use>
+                </svg>
+                Manage users
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href="img/icons.svg#icon-star"></use>
+                </svg>
+                Manage reviews
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <svg>
+                  <use xlink:href="img/icons.svg#icon-briefcase"></use>
+                </svg>
+                Manage bookings
+              </a>
+            </li>
+          </ul>
+        </div>
+        <% } %>
+      </ul>
+    </nav>
+
+    <div class="user-view__content">
+      <div class="user-view__form-container">
+        <h2 class="heading-secondary ma-bt-md">Your account settings</h2>
+        <!-- Form with API -->
+        <form class="form form-user-data">
+          <div class="form__group">
+            <label class="form__label" for="name">Name</label>
+            <input id="name" class="form__input" type="text" value="<%= user.name %>" required name="name">
+          </div>
+          <div class="form__group ma-bt-md">
+            <label class="form__label" for="email">Email address</label>
+            <input id="email" class="form__input" type="email" value="<%= user.email %>" required name="email">
+          </div>
+          <div class="form__group form__photo-upload">
+            <img class="form__user-photo" src="/img/users/<%= user.photo %>" alt="User photo">
+            <input class="form__upload" type="file" accept="image/*" id="photo" name="photo">
+            <label for="photo">Choose new photo</label>
+          </div>
+          <div class="form__group right">
+            <button class="btn btn--small btn--green btn--update" type="submit">Save settings</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="line">&nbsp;</div>
+
+      <div class="user-view__form-container">
+        <h2 class="heading-secondary ma-bt-md">Password change</h2>
+        <form class="form form-user-password">
+          <div class="form__group">
+            <label class="form__label" for="password-current">Current password</label>
+            <input id="password-current" class="form__input" type="password" placeholder="••••••••" required minlength="8">
+          </div>
+          <div class="form__group ma-bt-md">
+            <label class="form__label" for="password">Password:</label>
+            <input id="password" class="form__input" type="password" name="password" placeholder="Enter Your Password" required minlength="8" maxlength="20" autocomplete="new-password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}">
+            <small class="password-hint" style="color:red; font-size:1.2em; font-weight: bold; display:none;">
+              Password must contain a minimum of 8 and a maximum of 20 characters, include at least one uppercase
+              letter,
+              one lowercase letter, one number, and one special character.
+            </small>
+          </div>
+          <div class="form__group ma-bt-md">
+            <label class="form__label" for="password_confirm">Confirm Password:</label>
+            <input id="password_confirm" class="form__input" type="password" name="password_confirm" placeholder="Enter Your Password" required minlength="8" maxlength="20" autocomplete="new-password">
+            <div class="error-message" style="color:red; font-size:1.2em; font-weight: bold; display:none;">Passwords
+              do
+              not match.</div>
+          </div>
+          <div class="form__group right">
+            <button class="btn btn--small btn--green btn--save-password" type="submit">Save password</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer.ejs') %>
+<!-- Assuming you have a footer partial -->
