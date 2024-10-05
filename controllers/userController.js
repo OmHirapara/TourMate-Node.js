@@ -54,6 +54,17 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
 
   // Await The Query
   const users = await features.execute(false);
+  users.forEach(user => {
+    delete user.dataValues.password_confirm;
+    delete user.dataValues.password_changed_at;
+    delete user.dataValues.password_reset_token;
+    delete user.dataValues.password_reset_expires;
+    delete user.dataValues.failed_login_attempts;
+    delete user.dataValues.blocked_until;
+    delete user.dataValues.createdAt;
+    delete user.dataValues.updatedAt;
+  });
+  // console.log('user', users);
 
   // SEND RESPONSE
   res.status(200).json({
@@ -131,6 +142,14 @@ exports.getUserById = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError('No User found with that ID', 404));
   }
+  delete user.dataValues.password_confirm;
+  delete user.dataValues.password_changed_at;
+  delete user.dataValues.password_reset_token;
+  delete user.dataValues.password_reset_expires;
+  delete user.dataValues.failed_login_attempts;
+  delete user.dataValues.blocked_until;
+  delete user.dataValues.createdAt;
+  delete user.dataValues.updatedAt;
   res.status(200).json({
     status: 'success',
     data: {
