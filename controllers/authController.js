@@ -62,8 +62,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     password_confirm: req.body.password_confirm,
-    password_changed_at: new Date(),
-    role: req.body.role
+    password_changed_at: new Date()
+    // role: req.body.role
   });
   const url = `${req.protocol}://${req.get('host')}/`;
   console.log(url);
@@ -86,10 +86,15 @@ exports.login = catchAsync(async (req, res, next) => {
   // 2) Check if user exists && password is correct
   const user = await User.scope('withPassword').findOne({
     where: { email: email.toLowerCase().trim() },
+    // where: { email: email.toLowerCase().trim(), role: ['user', 'admin'] }, If You Don't Want To Login Other Thann Admin And User
     hooks: false
   });
 
-  if (!user || !(await user.correctPassword(password.trim(), user.password))) {
+  if (!user) {
+    return next(new AppError('Invalid email or password', 401));
+  }
+
+  if (!(await user.correctPassword(password.trim(), user.password))) {
     user.failed_login_attempts += 1;
 
     console.log('failedattmpts', user.failed_login_attempts);

@@ -9,6 +9,8 @@ const {
   Review,
   Booking
 } = require('./../models/associations.js');
+
+
 exports.getBilling = catchAsync(async (req, res, next) => {
   const allBooking = await Booking.findAll({
     where: {
