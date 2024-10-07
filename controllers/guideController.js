@@ -50,13 +50,22 @@ exports.getAllGuide = catchAsync(async (req, res, next) => {
     .paginate();
 
   // Await The Query
-  const guide = await features.execute(false);
-
+  const guides = await features.execute(false);
+  guides.forEach(guide => {
+    delete guide.dataValues.password_confirm;
+    delete guide.dataValues.password_changed_at;
+    delete guide.dataValues.password_reset_token;
+    delete guide.dataValues.password_reset_expires;
+    delete guide.dataValues.failed_login_attempts;
+    delete guide.dataValues.blocked_until;
+    delete guide.dataValues.createdAt;
+    delete guide.dataValues.updatedAt;
+  });
   // SEND RESPONSE
   res.status(200).json({
     status: 'success',
-    results: guide.length,
-    data: guide
+    results: guides.length,
+    data: guides
   });
 });
 
