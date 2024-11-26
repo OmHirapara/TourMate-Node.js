@@ -16,11 +16,22 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const ejsMate = require('ejs-mate');
+const cors = require('cors');
 
 const app = express();
 
 // Use cookie-parser middleware
 app.use(cookieParser());
+
+// Basic CORS configuration
+app.use(
+  cors({
+    origin: 'http://localhost:3001', // Your React app's URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true // If you're using cookies/sessions
+  })
+);
 
 app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');

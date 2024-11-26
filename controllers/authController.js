@@ -112,6 +112,50 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.loginAdmin = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+  console.log('email', email, password);
+
+  // 1) Check if email and password exist
+  if (!email || !password) {
+    return next(new AppError('Please provide email and password!', 400));
+  }
+  const admin = await User.scope('withPassword').findOne({
+    where: { role: 'admin' },
+    hooks: false
+  });
+  console.log('admin', admin);
+  if (email.toLowerCase().trim() !== admin.email) {
+    return next(new AppError('Incorrect email or password', 400));
+  }
+  console.log('admin', admin);
+
+  if (
+    !admin ||
+    !(await admin.correctPassword(password.trim(), admin.password))
+  ) {
+    admin.failed_login_attempts += 1;
+
+    console.log('failedattmpts', admin.failed_login_attempts);
+
+    if (admin.failed_login_attempts >= 3) {
+      admin.blocked_until = new Date(Date.now() + 5 * 60 * 1000); // Block for 5 Minutes
+    }
+    await admin.save();
+    return next(new AppError('Incorrect email or password', 401));
+  }
+
+  // Reset failed login attempts on successful login
+  if (admin.active === false) admin.active = true;
+  admin.failed_login_attempts = 0;
+  admin.blocked_until = null;
+  await admin.save();
+  // console.log('user', user);
+
+  // 3) If everything ok, send token to client
+  createSendToken(admin, 200, res);
+});
+
 exports.logout = (req, res) => {
   res.cookie('jwt', 'log-out', {
     expires: new Date(Date.now() + 10 * 1000),
