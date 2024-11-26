@@ -4,6 +4,7 @@ const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 const multer = require('multer');
+const sequelize = require('../sequelize');
 const APIFeatures = require('../utils/apiFeatures');
 
 const multerStorage = multer.memoryStorage();
@@ -54,6 +55,17 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
 
   // Await The Query
   const users = await features.execute(false);
+  users.forEach(user => {
+    delete user.dataValues.password_confirm;
+    delete user.dataValues.password_changed_at;
+    delete user.dataValues.password_reset_token;
+    delete user.dataValues.password_reset_expires;
+    delete user.dataValues.failed_login_attempts;
+    delete user.dataValues.blocked_until;
+    delete user.dataValues.createdAt;
+    delete user.dataValues.updatedAt;
+  });
+  // console.log('user', users);
 
   // SEND RESPONSE
   res.status(200).json({
@@ -96,7 +108,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.file) filteredBody.photo = req.file.filename;
   console.log('filter', filteredBody);
 
-  // 3) Update user document
+  // 3) Update user document//! check if admin change the user detail so what is req.user.id
   const updatedUser = await User.update(filteredBody, {
     where: { id: req.user.id },
     returning: true,
@@ -129,13 +141,57 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 exports.getUserById = catchAsync(async (req, res, next) => {
   const user = await User.findByPk(req.params.id);
   if (!user) {
-    return next(new AppError('No User found with that ID', 404));
+    return next(new AppError('No user found with that ID', 404));
+  }
+  const userId = req.params.id;
+  const [results, metadata] = await sequelize.query(
+    `
+                SELECT 
+                    u.id AS user_id,
+                    u.name AS user_name,
+                    u.role AS user_role,
+                    u.email AS user_email,
+                    u.photo,
+                    u.active,
+                  b.id AS booking_id,
+                  b.price,
+                  b.paid,
+                  b.invoice_url,
+                  r.id AS review_id,
+                  r.rating,
+                  r.review,
+                  t.id AS tour_id,
+                    t.name AS tour_name,
+                    t.start_dates
+                  
+                FROM 
+                    users u
+                LEFT JOIN 
+                    booking b ON u.id = b."userId"
+                LEFT JOIN 
+                    reviews r ON b."tourId" = r."tourId" AND b."userId" = r."userId"
+                LEFT JOIN 
+                    tours t ON b."tourId" = t.id                 
+                WHERE 
+                    u.role = 'user'
+                AND u.id = :userId
+                GROUP BY 
+                    u.id,
+                    r.id,
+                    t.id,                                         
+                    b.id;
+
+  `,
+    {
+      replacements: { userId }
+    }
+  );
+  if (results.length === 0) {
+    return next(new AppError('No user found with that ID', 404));
   }
   res.status(200).json({
     status: 'success',
-    data: {
-      user
-    }
+    data: results
   });
 });
 
@@ -169,3 +225,24 @@ exports.softDeleteUser = catchAsync(async (req, res, next) => {
     data: null
   });
 });
+
+// exports.getUserById = catchAsync(async (req, res, next) => {
+//   const user = await User.findByPk(req.params.id);
+//   if (!user) {
+//     return next(new AppError('No user found with that ID', 404));
+//   }
+//   delete user.dataValues.password_confirm;
+//   delete user.dataValues.password_changed_at;
+//   delete user.dataValues.password_reset_token;
+//   delete user.dataValues.password_reset_expires;
+//   delete user.dataValues.failed_login_attempts;
+//   delete user.dataValues.blocked_until;
+//   delete user.dataValues.createdAt;
+//   delete user.dataValues.updatedAt;
+//   res.status(200).json({
+//     status: 'success',
+//     data: {
+//       user
+//     }
+//   });
+// });
